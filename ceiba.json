@@ -1,0 +1,75 @@
+{
+  "id": "https://your-ceiba.example/",
+  "name": "your-ceiba",
+  "displayName": "Your Ceiba",
+  "description": "A ceiba node — edit this description before going live.",
+  "url": "https://your-ceiba.example/",
+  "protocol_version": "0.5",
+  "type": "community",
+
+  "roles_supported": ["operator"],
+
+  "identity": {
+    "entity_types": ["entity"],
+    "claim_enabled": true,
+    "verification_method": "whatsapp_otp",
+    "auth_methods": ["whatsapp_otp"],
+    "profile_statuses": ["unclaimed", "pending", "verified"]
+  },
+
+  "data": {
+    "source_attribution": true,
+    "edit_history": true,
+    "open_editing": true,
+    "protected_fields_on_claim": true,
+    "license": "CC BY 4.0"
+  },
+
+  "api": {
+    "base_url": "https://your-ceiba.example/v1",
+    "health": "/health",
+    "docs": "/docs",
+    "llms_txt": "/llms.txt",
+    "mcp_server": false,
+    "schema_org": true
+  },
+
+  "authoritative_types": ["entity"],
+  "connector_types": ["ceiba:located_at"],
+
+  "federation": {
+    "sync_pull": false,
+    "sync_push": false,
+    "discovery": "static-registry"
+  },
+
+  "interconnections": [],
+
+  "karma": {
+    "enabled": false,
+    "transferable": false,
+    "decay_years": 5,
+    "split": { "contributors": 0.80, "commons_fund": 0.20 }
+  },
+
+  "payment_rails": [],
+
+  "public_event_threshold_hours": 48,
+
+  "data_export": {
+    "license": "CC BY 4.0",
+    "rate_limit": "60 req/min anon"
+  },
+
+  "compliance_level": 1,
+
+  "_koa_gen": {
+    "koa_base_version": "1.1.0",
+    "patterns": [
+      { "name": "ceiba-bootstrap", "version": "0.5.0" }
+    ],
+    "runtime": "/static/koa-patterns-runtime.js",
+    "source_ceiba": "ceiba-template",
+    "migration_date": "2026-05-16"
+  }
+}

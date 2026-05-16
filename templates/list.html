@@ -1,0 +1,72 @@
+{% extends "_base.html" %}
+
+{% block title %}{{ entity_type_plural_display }} — {{ display_name }}{% endblock %}
+
+{% block content %}
+<section class="list-header">
+  <h1>{{ entity_type_plural_display }}</h1>
+  <p class="muted">{{ total }} en total{% if search %} · resultado de búsqueda para "<strong>{{ search }}</strong>"{% endif %}</p>
+</section>
+
+<section class="list-controls">
+  <form method="get" class="search-form">
+    <input type="search" name="q" placeholder="Buscar por nombre…" value="{{ search or '' }}" autocomplete="off">
+    {% if cities %}
+    <select name="city">
+      <option value="">Todas las ciudades</option>
+      {% for c in cities %}<option value="{{ c }}" {% if c==selected_city %}selected{% endif %}>{{ c }}</option>{% endfor %}
+    </select>
+    {% endif %}
+    <button type="submit">Filtrar</button>
+    {% if search or selected_city %}<a href="/{{ entity_type }}s" class="link-clear">Limpiar</a>{% endif %}
+  </form>
+</section>
+
+{% if entities %}
+<section class="card-grid">
+  {% for e in entities %}
+  <a class="card" href="/{{ entity_type }}/{{ e.slug }}">
+    {% if e.image_url %}<div class="card-img" style="background-image:url('{{ e.image_url }}')"></div>{% else %}<div class="card-img card-img-placeholder">{{ e.name[0]|upper }}</div>{% endif %}
+    <div class="card-body">
+      <h3>{{ e.name }}</h3>
+      {% if e.city %}<p class="muted">{{ e.city }}</p>{% endif %}
+      {% if e.description %}<p>{{ e.description|truncate(120) }}</p>{% endif %}
+      {% if e.status == 'verified' %}<span class="badge badge-verified">Verificado</span>{% endif %}
+    </div>
+  </a>
+  {% endfor %}
+</section>
+
+{% if pagination.total_pages > 1 %}
+<nav class="pagination">
+  {% if pagination.page > 1 %}<a href="?{{ pagination.query_prev }}">← Anterior</a>{% endif %}
+  <span>Página {{ pagination.page }} de {{ pagination.total_pages }}</span>
+  {% if pagination.page < pagination.total_pages %}<a href="?{{ pagination.query_next }}">Siguiente →</a>{% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+<section class="empty-state">
+  <p>No hay {{ entity_type_plural_display|lower }} que coincidan con tu búsqueda.</p>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "{{ entity_type_plural_display }} — {{ display_name }}",
+  "numberOfItems": {{ total }},
+  "itemListElement": [
+    {% for e in entities %}{
+      "@type": "ListItem",
+      "position": {{ loop.index }},
+      "url": "https://{{ domain }}/{{ entity_type }}/{{ e.slug }}",
+      "name": "{{ e.name }}"
+    }{% if not loop.last %},{% endif %}{% endfor %}
+  ]
+}
+</script>
+{% endblock %}

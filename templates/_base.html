@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es" data-theme="light" data-ga-ids="{{ ga_ids|default('') }}">
+<head>
+<meta charset="utf-8">
+<title>{% block title %}{{ display_name }}{% endblock %}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="{% block meta_description %}{{ description }}{% endblock %}">
+<meta name="theme-color" content="#0c0a0e">
+<link rel="canonical" href="{% block canonical %}https://{{ domain }}{{ request.url.path }}{% endblock %}">
+
+<!-- Open Graph -->
+<meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+<meta property="og:description" content="{% block og_description %}{{ description }}{% endblock %}">
+<meta property="og:url" content="https://{{ domain }}{{ request.url.path }}">
+<meta property="og:type" content="{% block og_type %}website{% endblock %}">
+<meta property="og:site_name" content="{{ display_name }}">
+<meta property="og:locale" content="es_MX">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css?v=20260510">
+
+{% block head_extra %}{% endblock %}
+</head>
+<body>
+
+<header class="site-nav">
+  <a href="/" class="brand">
+    {{ display_name }}
+    <span id="koa-brand-tag">ceiba v0.4</span>
+  </a>
+  <nav>
+    <a href="/{{ entity_type }}s">{{ entity_type_plural_display }}</a>
+    <a href="/about">Acerca</a>
+    <button class="theme-toggle" onclick="document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'; localStorage.setItem('theme', document.documentElement.dataset.theme)" aria-label="Cambiar tema">◐</button>
+  </nav>
+</header>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <p>{{ display_name }} · ceiba.to v0.4 · <a href="/.well-known/ceiba.json">manifest</a> · <a href="/llms.txt">LLM</a> · <a href="https://ceiba.to">¿qué es esto?</a></p>
+  <p class="muted">Datos públicos bajo CC BY 4.0. <a href="/admin">admin</a>.</p>
+</footer>
+
+<script>
+  // Restore theme preference
+  (function(){
+    var t = localStorage.getItem('theme');
+    if (t) document.documentElement.dataset.theme = t;
+  })();
+  window.KOA_CONFIG = {
+    ceiba_id: "{{ ceiba_name }}",
+    tz: "America/Mexico_City",
+    ceiba_json_url: "/.well-known/ceiba.json",
+    registry_url: "https://ceiba.to/ceibas.json"
+  };
+</script>
+<script src="/static/koa-patterns-runtime.js" defer></script>
+<script src="/static/cookie-consent.js" defer></script>
+
+{% block body_extra %}{% endblock %}
+</body>
+</html>

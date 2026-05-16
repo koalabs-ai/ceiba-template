@@ -1,0 +1,50 @@
+{% extends "_base.html" %}
+
+{% block content %}
+<section class="hero">
+  <h1>{{ display_name }}</h1>
+  <p class="lede">{{ description }}</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">{{ stats.entities }}</span><span class="stat-lbl">{{ entity_type_plural_display|lower }}</span></div>
+    {% if stats.cities %}<div class="stat"><span class="stat-num">{{ stats.cities }}</span><span class="stat-lbl">ciudades</span></div>{% endif %}
+    {% if stats.members %}<div class="stat"><span class="stat-num">{{ stats.members }}</span><span class="stat-lbl">miembros</span></div>{% endif %}
+  </div>
+  <a href="/{{ entity_type }}s" class="btn-primary">Explorar todos los {{ entity_type_plural_display|lower }} →</a>
+</section>
+
+{% if featured %}
+<section class="featured">
+  <h2>Destacados</h2>
+  <div class="card-grid">
+    {% for e in featured %}
+    <a class="card" href="/{{ entity_type }}/{{ e.slug }}">
+      {% if e.image_url %}<div class="card-img" style="background-image:url('{{ e.image_url }}')"></div>{% else %}<div class="card-img card-img-placeholder">{{ e.name[0]|upper }}</div>{% endif %}
+      <div class="card-body">
+        <h3>{{ e.name }}</h3>
+        {% if e.city %}<p class="muted">{{ e.city }}</p>{% endif %}
+        {% if e.description %}<p>{{ e.description|truncate(100) }}</p>{% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="cta">
+  <h2>¿Falta algo?</h2>
+  <p>Este es un directorio abierto. Cualquiera puede contribuir, claim su perfil, o construir productos sobre el grafo público.</p>
+  <p><a href="https://ceiba.to">Aprende cómo →</a></p>
+</section>
+{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "{{ display_name }}",
+  "description": "{{ description }}",
+  "url": "https://{{ domain }}/"
+}
+</script>
+{% endblock %}

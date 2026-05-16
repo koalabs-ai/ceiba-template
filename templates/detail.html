@@ -1,0 +1,85 @@
+{% extends "_base.html" %}
+
+{% block title %}{{ entity.name }} — {{ display_name }}{% endblock %}
+{% block og_type %}profile{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="/">{{ display_name }}</a> ›
+  <a href="/{{ entity_type }}s">{{ entity_type_plural_display }}</a> ›
+  <span>{{ entity.name }}</span>
+</nav>
+
+<article class="entity-detail">
+  <header>
+    {% if entity.image_url %}<img class="entity-img" src="{{ entity.image_url }}" alt="{{ entity.name }}">{% endif %}
+    <div>
+      <h1>{{ entity.name }}</h1>
+      {% if entity.city %}<p class="muted">{{ entity.city }}</p>{% endif %}
+      <div class="entity-badges">
+        {% if entity.status == 'verified' %}<span class="badge badge-verified">Verificado</span>{% endif %}
+        {% if entity.status == 'unclaimed' %}<span class="badge badge-unclaimed">Sin reclamar</span>{% endif %}
+        <span class="badge badge-source">Fuente: {{ entity.source }}</span>
+      </div>
+    </div>
+  </header>
+
+  {% if entity.description %}
+  <section class="entity-description">
+    <p>{{ entity.description }}</p>
+  </section>
+  {% endif %}
+
+  {% if entity.description_long %}
+  <section class="entity-bio">
+    {{ entity.description_long|safe }}
+  </section>
+  {% endif %}
+
+  {% if entity.data %}
+  <section class="entity-data">
+    <h2>Detalles</h2>
+    <dl>
+      {% for k, v in entity.data.items() %}
+      <dt>{{ k|replace('_', ' ')|title }}</dt><dd>{{ v }}</dd>
+      {% endfor %}
+    </dl>
+  </section>
+  {% endif %}
+
+  <section class="entity-meta">
+    <h2>Información de fuente</h2>
+    <p class="muted">
+      Agregado: {{ entity.created_at }}{% if entity.source_url %} · <a href="{{ entity.source_url }}" rel="noopener">fuente original</a>{% endif %}
+    </p>
+    {% if entity.status != 'verified' and entity.status != 'claimed' %}
+    <p class="claim-cta">¿Es tuyo este perfil? <a href="/admin">Reclámalo</a> para tomar control.</p>
+    {% endif %}
+  </section>
+
+  {% if edit_history %}
+  <section class="entity-history">
+    <h2>Historial de cambios</h2>
+    <ul>
+      {% for h in edit_history %}
+      <li>{{ h.edited_at }} — {{ h.reason or 'edición' }}{% if h.edited_by %} (por {{ h.edited_by }}){% endif %}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+</article>
+{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "{{ schema_org_type|default('Thing') }}",
+  "name": "{{ entity.name }}",
+  {% if entity.description %}"description": "{{ entity.description|replace('"','\\"') }}",{% endif %}
+  {% if entity.image_url %}"image": "{{ entity.image_url }}",{% endif %}
+  "url": "https://{{ domain }}{{ request.url.path }}"
+  {% if entity.city %},"address": {"@type": "PostalAddress", "addressLocality": "{{ entity.city }}"}{% endif %}
+}
+</script>
+{% endblock %}

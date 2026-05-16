@@ -1,0 +1,24 @@
+# render.yaml — Render.com deployment for a ceiba node.
+#
+# Connect this repo to Render and it'll detect this file automatically.
+# Free tier works for small ceibas; persistent disk requires the starter plan.
+#
+# Reference: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: your-ceiba                # ← change this
+    runtime: python
+    plan: starter                   # free works for L1; starter adds persistent disk
+    region: oregon                  # or singapore, ohio, frankfurt, ...
+    branch: main
+    buildCommand: pip install -r requirements.txt && mkdir -p data && python -c "import sqlite3; c=sqlite3.connect('data/db.sqlite'); c.executescript(open('sql/001_init.sql').read()); c.commit()"
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.7
+    disk:
+      name: ceiba-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

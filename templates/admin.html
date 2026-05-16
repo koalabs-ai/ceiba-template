@@ -1,0 +1,37 @@
+{% extends "_base.html" %}
+
+{% block title %}Admin — {{ display_name }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Panel admin</h1>
+  <p class="muted">{{ description }}</p>
+</section>
+
+<section class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr))">
+  <div class="card"><div class="card-body"><div class="stat-num" id="stat-entities">—</div><div class="stat-lbl">Entidades</div></div></div>
+  <div class="card"><div class="card-body"><div class="stat-num" id="stat-members">—</div><div class="stat-lbl">Miembros</div></div></div>
+  <div class="card"><div class="card-body"><div class="stat-num" id="stat-events">—</div><div class="stat-lbl">Eventos</div></div></div>
+</section>
+
+<h2>Endpoints del protocolo</h2>
+<ul>
+  <li><a href="/.well-known/ceiba.json">/.well-known/ceiba.json</a> — manifiesto canónico</li>
+  <li><a href="/health">/health</a> — estado operativo</li>
+  <li><a href="/v1/stats">/v1/stats</a> — stats de la comunidad</li>
+  <li><a href="/llms.txt">/llms.txt</a> — descubrimiento por agentes IA</li>
+  <li><a href="/docs">/docs</a> — OpenAPI (Swagger)</li>
+</ul>
+
+<p class="muted">Ceiba: <code>{{ ceiba_name }}</code> · Compliance: <code>L1 — Registered</code> · Protocol: <code>v0.4</code></p>
+{% endblock %}
+
+{% block body_extra %}
+<script>
+  fetch("/v1/stats").then(r => r.json()).then(d => {
+    document.getElementById("stat-entities").textContent = d.entities ?? 0;
+    document.getElementById("stat-members").textContent  = d.members  ?? 0;
+    document.getElementById("stat-events").textContent   = d.events   ?? 0;
+  }).catch(() => {});
+</script>
+{% endblock %}
