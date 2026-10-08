@@ -1,11 +1,12 @@
-# Snippet para incluir en el Caddyfile canónico (koa-files:/etc/caddy/Caddyfile).
-# Reemplaza your-ceiba.example y 8200 antes de pegar.
+# Snippet to include in your canonical Caddyfile (wherever Caddy's config lives
+# on your reverse-proxy host).
+# Replace your-ceiba.example and 8200 before pasting.
 #
-# Workflow: pull-diff-push-smoketest.
-#   ssh inge@100.64.0.4 'cat /etc/caddy/Caddyfile' > /tmp/Caddyfile
-#   # ... editar localmente, agregar este snippet ...
-#   rsync -av /tmp/Caddyfile inge@100.64.0.4:/tmp/Caddyfile
-#   ssh inge@100.64.0.4 'sudo cp /tmp/Caddyfile /etc/caddy/Caddyfile && sudo systemctl reload caddy'
+# Suggested workflow: pull-diff-push-smoketest.
+#   ssh <user>@<proxy-host> 'cat /etc/caddy/Caddyfile' > /tmp/Caddyfile
+#   # ... edit locally, add this snippet ...
+#   rsync -av /tmp/Caddyfile <user>@<proxy-host>:/tmp/Caddyfile
+#   ssh <user>@<proxy-host> 'sudo cp /tmp/Caddyfile /etc/caddy/Caddyfile && sudo systemctl reload caddy'
 
 your-ceiba.example {
   encode gzip zstd
@@ -16,5 +17,5 @@ your-ceiba.example {
     Referrer-Policy "strict-origin-when-cross-origin"
     Permissions-Policy "geolocation=(), microphone=(), camera=()"
   }
-  reverse_proxy 100.64.0.5:8200
+  reverse_proxy 127.0.0.1:8200
 }
