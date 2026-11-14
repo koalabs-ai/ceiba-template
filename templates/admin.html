@@ -20,10 +20,19 @@
   <li><a href="/health">/health</a> — estado operativo</li>
   <li><a href="/v1/stats">/v1/stats</a> — stats de la comunidad</li>
   <li><a href="/llms.txt">/llms.txt</a> — descubrimiento por agentes IA</li>
+  <li><a href="/v1/entities">/v1/entities</a> — lectura (<code>?type=</code>)</li>
   <li><a href="/docs">/docs</a> — OpenAPI (Swagger)</li>
 </ul>
 
-<p class="muted">Ceiba: <code>{{ ceiba_name }}</code> · Compliance: <code>L1 — Registered</code> · Protocol: <code>v0.4</code></p>
+<h2>API de escritura</h2>
+<p>
+  {% if writes_enabled %}<span class="badge badge-verified">activa</span>{% else %}<span class="badge badge-unclaimed">desactivada</span>{% endif %}
+  <code>POST /v1/entities</code>, <code>PATCH|DELETE /v1/entities/{id}</code> con
+  <code>Authorization: Bearer $CEIBA_OPERATOR_TOKEN</code>. Sin token configurado responde 403 «writes disabled».
+  Cada escritura queda en <code>edit_history</code>.
+</p>
+
+<p class="muted">Ceiba: <code>{{ ceiba_name }}</code> · Compliance: <code>L1 — Registered</code> · Protocol: <code>v{{ protocol_version }}</code></p>
 {% endblock %}
 
 {% block body_extra %}

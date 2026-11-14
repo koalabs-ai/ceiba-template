@@ -31,11 +31,11 @@
 <header class="site-nav">
   <a href="/" class="brand">
     {{ display_name }}
-    <span id="koa-brand-tag">ceiba v0.4</span>
+    <span id="koa-brand-tag">ceiba v{{ protocol_version }}</span>
   </a>
   <nav>
-    <a href="/{{ entity_type }}s">{{ entity_type_plural_display }}</a>
-    <a href="/about">Acerca</a>
+    {% for t in types %}<a href="/{{ t.plural }}">{{ t.display }}</a>
+    {% endfor %}    <a href="/about">Acerca</a>
     <button class="theme-toggle" onclick="document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'; localStorage.setItem('theme', document.documentElement.dataset.theme)" aria-label="Cambiar tema">◐</button>
   </nav>
 </header>
@@ -45,7 +45,7 @@
 </main>
 
 <footer class="site-footer">
-  <p>{{ display_name }} · ceiba.to v0.4 · <a href="/.well-known/ceiba.json">manifest</a> · <a href="/llms.txt">LLM</a> · <a href="https://ceiba.to">¿qué es esto?</a></p>
+  <p>{{ display_name }} · ceiba.to v{{ protocol_version }} · <a href="/.well-known/ceiba.json">manifest</a> · <a href="/llms.txt">LLM</a> · <a href="https://ceiba.to">¿qué es esto?</a></p>
   <p class="muted">Datos públicos bajo CC BY 4.0. <a href="/admin">admin</a>.</p>
 </footer>
 

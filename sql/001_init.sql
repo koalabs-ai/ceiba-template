@@ -1,34 +1,36 @@
 -- ceiba-template — base schema (compliance Level 1)
--- Adapt entity to your domain.
+-- One `entities` table (type column), claims, edit history, federation, karma.
 
 PRAGMA foreign_keys = ON;
 
--- Primary entity table — RENAME / EXTEND for your domain.
-CREATE TABLE IF NOT EXISTS entitys (
+-- Primary table: ONE table for every entity type. The type is a value in a
+-- column, never a table name, so no SQL identifier ever comes from input.
+CREATE TABLE IF NOT EXISTS entities (
   id                TEXT PRIMARY KEY,                -- e.g. "ent_abc123"
-  slug              TEXT UNIQUE NOT NULL,            -- URL-friendly: kebab-case from name
+  type              TEXT NOT NULL,                   -- one of ceiba.json identity.entity_types
+  slug              TEXT NOT NULL,                   -- URL-friendly: kebab-case from name
   name              TEXT NOT NULL,
-  description       TEXT,                            -- one-line summary (≤200 chars)
-  description_long  TEXT,                            -- bio/long-form (markdown OK)
+  description       TEXT,                            -- one-line summary (<=500 chars)
+  description_long  TEXT,                            -- bio/long-form (plain text)
   image_url         TEXT,                            -- primary image (for cards + detail)
   city              TEXT,                            -- common filter field
   tags              TEXT,                            -- JSON array of strings
-  data              TEXT,                            -- JSON blob for flexible domain fields
-  source            TEXT NOT NULL,                   -- §4.2: manual|api_sync|scrape|import|community|claim
+  data              TEXT,                            -- JSON object for flexible domain fields
+  source            TEXT NOT NULL DEFAULT 'manual',  -- §4.2: manual|api_sync|scrape|import|community|claim
   source_url        TEXT,
   trust_level       INTEGER NOT NULL DEFAULT 1,      -- §4.2: 1-5
   status            TEXT NOT NULL DEFAULT 'unclaimed', -- §4.1: unclaimed|pending|verified|claimed
-  claimed_by        TEXT,                            -- email or phone of owner once claimed
+  claimed_by        TEXT,                            -- reserved: claims are not implemented in 0.5
   claimed_at        TEXT,
-  created_at        TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at        TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at        TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
+  updated_at        TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
+  UNIQUE (type, slug)
 );
 
-CREATE INDEX IF NOT EXISTS idx_entitys_slug      ON entitys(slug);
-CREATE INDEX IF NOT EXISTS idx_entitys_name      ON entitys(name);
-CREATE INDEX IF NOT EXISTS idx_entitys_city      ON entitys(city);
-CREATE INDEX IF NOT EXISTS idx_entitys_status    ON entitys(status);
-CREATE INDEX IF NOT EXISTS idx_entitys_created   ON entitys(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_entities_type_name ON entities(type, name);
+CREATE INDEX IF NOT EXISTS idx_entities_city      ON entities(city);
+CREATE INDEX IF NOT EXISTS idx_entities_status    ON entities(status);
+CREATE INDEX IF NOT EXISTS idx_entities_created   ON entities(created_at DESC);
 
 -- §4.1: claim flow (Level 2 ready)
 CREATE TABLE IF NOT EXISTS profile_claim (

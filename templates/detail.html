@@ -6,7 +6,7 @@
 {% block content %}
 <nav class="breadcrumb">
   <a href="/">{{ display_name }}</a> ›
-  <a href="/{{ entity_type }}s">{{ entity_type_plural_display }}</a> ›
+  <a href="/{{ plural }}">{{ plural_display }}</a> ›
   <span>{{ entity.name }}</span>
 </nav>
 
@@ -53,7 +53,7 @@
       Agregado: {{ entity.created_at }}{% if entity.source_url %} · <a href="{{ entity.source_url }}" rel="noopener">fuente original</a>{% endif %}
     </p>
     {% if entity.status != 'verified' and entity.status != 'claimed' %}
-    <p class="claim-cta">¿Es tuyo este perfil? <a href="/admin">Reclámalo</a> para tomar control.</p>
+    <p class="claim-cta">¿Datos incorrectos? Escribe al operador de este directorio.</p>
     {% endif %}
   </section>
 

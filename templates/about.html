@@ -15,15 +15,15 @@
 
   <h2>¿Cómo participo?</h2>
   <ul>
-    <li><strong>Como visitante:</strong> explora los {{ entity_type_plural_display|lower }} en el directorio.</li>
-    <li><strong>Como dueño:</strong> si encuentras tu perfil, puedes <a href="/admin">reclamarlo</a> para tomar control.</li>
+    <li><strong>Como visitante:</strong> explora el directorio.</li>
+    <li><strong>Como dueño:</strong> pide al operador una corrección (el flujo de reclamo aún no existe).</li>
     <li><strong>Como contribuidor:</strong> reportar correcciones o agregar entidades nuevas (próximamente).</li>
   </ul>
 
   <h2>Datos abiertos</h2>
   <p>Toda la información pública aquí está disponible bajo Creative Commons BY 4.0. Puedes consumir el grafo vía API:</p>
   <ul>
-    <li><code><a href="/v1/{{ entity_type }}s">/v1/{{ entity_type }}s</a></code> — listado JSON</li>
+    <li><code><a href="/v1/entities">/v1/entities</a></code> — listado JSON (filtra con <code>?type=</code>)</li>
     <li><code><a href="/.well-known/ceiba.json">/.well-known/ceiba.json</a></code> — manifest del ceiba</li>
     <li><code><a href="/llms.txt">/llms.txt</a></code> — para agentes IA</li>
   </ul>

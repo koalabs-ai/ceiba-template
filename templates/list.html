@@ -1,10 +1,10 @@
 {% extends "_base.html" %}
 
-{% block title %}{{ entity_type_plural_display }} — {{ display_name }}{% endblock %}
+{% block title %}{{ plural_display }} — {{ display_name }}{% endblock %}
 
 {% block content %}
 <section class="list-header">
-  <h1>{{ entity_type_plural_display }}</h1>
+  <h1>{{ plural_display }}</h1>
   <p class="muted">{{ total }} en total{% if search %} · resultado de búsqueda para "<strong>{{ search }}</strong>"{% endif %}</p>
 </section>
 
@@ -18,7 +18,7 @@
     </select>
     {% endif %}
     <button type="submit">Filtrar</button>
-    {% if search or selected_city %}<a href="/{{ entity_type }}s" class="link-clear">Limpiar</a>{% endif %}
+    {% if search or selected_city %}<a href="/{{ plural }}" class="link-clear">Limpiar</a>{% endif %}
   </form>
 </section>
 
@@ -47,7 +47,7 @@
 
 {% else %}
 <section class="empty-state">
-  <p>No hay {{ entity_type_plural_display|lower }} que coincidan con tu búsqueda.</p>
+  <p>No hay {{ plural_display|lower }} que coincidan con tu búsqueda.</p>
 </section>
 {% endif %}
 {% endblock %}
@@ -57,7 +57,7 @@
 {
   "@context": "https://schema.org",
   "@type": "ItemList",
-  "name": "{{ entity_type_plural_display }} — {{ display_name }}",
+  "name": "{{ plural_display }} — {{ display_name }}",
   "numberOfItems": {{ total }},
   "itemListElement": [
     {% for e in entities %}{
