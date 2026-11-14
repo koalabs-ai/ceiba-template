@@ -1,0 +1,663 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ceiba.to/ceiba.schema.json",
+  "title": "ceiba.json manifest",
+  "description": "Manifest for a ceiba — a node in the ceiba.to federated community protocol. Spec v0.5 (additive bump: roles_supported + linked_entities + api_keys_emit + payment_rails extended). v0.4 manifests remain valid. See https://ceiba.to/whitepaper-tecnico.html and https://github.com/koa-dev/spec.",
+  "type": "object",
+  "required": [
+    "name",
+    "displayName",
+    "description",
+    "url",
+    "type"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uri",
+      "description": "Canonical URI identifier for this ceiba (recommended: same as `url`)."
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*[a-z0-9]$",
+      "minLength": 2,
+      "maxLength": 64,
+      "description": "Kebab-case unique identifier within the ceiba.to registry."
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "One-line human description."
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Canonical public URL of the ceiba."
+    },
+    "protocol_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+      "description": "Protocol semver. Current: 0.5 (additive bump over 0.4)."
+    },
+    "ceiba_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+      "description": "Legacy alias of protocol_version. Deprecated in v0.4 but tolerated."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "community",
+        "internal",
+        "infrastructure",
+        "registry"
+      ],
+      "description": "Ceiba role. `community` = public-facing; `internal` = private; `infrastructure` = shared service; `registry` = hub-style indexer."
+    },
+    "role": {
+      "type": "string",
+      "description": "Optional sub-role refinement (e.g. 'registry', 'observer')."
+    },
+    "roles_supported": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "operator",
+          "contributor",
+          "entity-owner"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "v0.5 — Canonical role taxonomy this ceiba recognizes for its actors. operator = runs the directory/registry. contributor = edits entities/events. entity-owner = claims and controls a single entity within the ceiba. Empty array = legacy v0.4 behavior (no formal role system)."
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "entity_types"
+      ],
+      "properties": {
+        "entity_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "claim_enabled": {
+          "type": "boolean"
+        },
+        "verification_method": {
+          "type": "string",
+          "enum": [
+            "community_vouch",
+            "admin_only",
+            "email",
+            "whatsapp_otp",
+            "sms_otp",
+            "webauthn",
+            "none"
+          ]
+        },
+        "auth_methods": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "email_password",
+              "whatsapp_otp",
+              "sms_otp",
+              "magic_link",
+              "webauthn",
+              "passkey",
+              "operator_token"
+            ]
+          }
+        },
+        "profile_statuses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "source_attribution"
+      ],
+      "properties": {
+        "source_attribution": {
+          "type": "boolean"
+        },
+        "edit_history": {
+          "type": "boolean"
+        },
+        "open_editing": {
+          "type": "boolean"
+        },
+        "protected_fields_on_claim": {
+          "type": "boolean"
+        },
+        "license": {
+          "type": "string",
+          "default": "CC BY 4.0",
+          "examples": [
+            "CC BY 4.0",
+            "CC0",
+            "CC BY-NC 4.0"
+          ]
+        }
+      }
+    },
+    "api": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "base_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "health": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "/health"
+        },
+        "docs": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "llms_txt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "mcp_server": {
+          "type": "boolean"
+        },
+        "schema_org": {
+          "type": "boolean"
+        },
+        "registry_index": {
+          "type": "string",
+          "description": "Only if type=registry"
+        },
+        "self_descriptor": {
+          "type": "string",
+          "default": "/.well-known/ceiba.json"
+        }
+      }
+    },
+    "api_base": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "openapi_url": {
+      "type": "string"
+    },
+    "mcp_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "authoritative_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "§7 Ciempiés: which entity types this ceiba is source-of-truth for."
+    },
+    "connector_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*:[a-z][a-z0-9_]*$"
+      },
+      "description": "§7 Ciempiés: typed connectors used by this ceiba's entities. Format `namespace:relation`, e.g. `ceiba:performs_at`."
+    },
+    "federation": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "sync_pull": {
+          "type": "boolean",
+          "default": false
+        },
+        "sync_push": {
+          "type": "boolean",
+          "default": false
+        },
+        "discovery": {
+          "type": "string",
+          "default": "static-registry"
+        },
+        "registry_refresh_interval_hours": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "interconnections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "ceiba",
+          "protocol"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "ceiba": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string",
+            "description": "Connection type. Recommended values: payment, identity, data, event, cross_listing, federation. Other values allowed for forward-compat.",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "v0.5 — Optional scopes for federated reads/writes between ceibas. Examples: 'read:entities', 'read:events', 'write:events'."
+          },
+          "api_key_required": {
+            "type": "boolean",
+            "default": false,
+            "description": "v0.5 — Whether the link is gated by an API key issued via api_keys_emit."
+          }
+        }
+      }
+    },
+    "karma": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "redemption_rate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Fixed rate, e.g. '1 karma = 1 MXN'. May rise but never fall."
+        },
+        "redemption_currency": {
+          "type": "string",
+          "examples": [
+            "USDC",
+            "MXN",
+            "USD",
+            "EUR"
+          ]
+        },
+        "transferable": {
+          "type": "boolean",
+          "const": false,
+          "description": "MUST be false in v0.4 (non-transferable per §6.6)."
+        },
+        "decay_years": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 5
+        },
+        "escrow_proof_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "split": {
+          "type": "object",
+          "properties": {
+            "contributors": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.8
+            },
+            "commons_fund": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.2
+            }
+          }
+        }
+      }
+    },
+    "payment_rails": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "stablecoin_usdc",
+          "stablecoin_usdt",
+          "stablecoin_dai",
+          "x402",
+          "fiat_invoice",
+          "lightning",
+          "mercadopago",
+          "stripe",
+          "wise",
+          "spei",
+          "oxxo",
+          "sepa",
+          "ach",
+          "pix",
+          "bank_transfer",
+          "manual"
+        ]
+      },
+      "description": "v0.5 — Expanded rails. Includes LATAM (spei, oxxo, pix), SEPA/ACH, and generic bank_transfer in addition to v0.4 set. forward-compat: parsers SHOULD warn-not-fail on unknown values."
+    },
+    "linked_entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "entity_uri"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "entity_uri": {
+            "type": "string",
+            "format": "uri",
+            "description": "Canonical URI to the entity's /.well-known/entity.json"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Scopes granted to THIS ceiba over the linked entity (e.g. 'read:basic', 'read:events', 'read:contact', 'write:events')."
+          },
+          "api_key_required": {
+            "type": "boolean",
+            "default": false
+          },
+          "ttl_seconds": {
+            "type": "integer",
+            "minimum": 60,
+            "description": "Cache TTL for federated reads. Default 3600 (1h)."
+          },
+          "last_synced_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "relation": {
+            "type": "string",
+            "description": "Optional connector_type narrating the link (e.g. 'ceiba:performs_at')."
+          }
+        }
+      },
+      "description": "v0.5 — Federated entity references. Each entry is a pointer to an entity's self-sovereign /.well-known/entity.json, with scopes the entity owner granted to THIS ceiba. Updates to the entity propagate via cache TTL refresh. Analogous to OAuth for entity data."
+    },
+    "api_keys_emit": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "v0.5 — Declares this ceiba can emit API keys for federated reads of its own entities by external ceibas/platforms.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "issuance_endpoint": {
+          "type": "string",
+          "format": "uri",
+          "description": "POST endpoint where entity owners request API keys for third parties. Default: '<api_base>/v1/api-keys'."
+        },
+        "scopes_available": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Allowed scopes the entity owner can grant (e.g. ['read:basic','read:events','read:contact','write:events','admin:billing'])."
+        },
+        "rotation_days": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 365,
+          "description": "Default validity window before key rotation is required."
+        }
+      }
+    },
+    "public_event_threshold_hours": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 48,
+      "description": "§5 — minimum hours-ahead at which a future event becomes commons. Configurable per ceiba."
+    },
+    "data_export": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "license": {
+          "type": "string",
+          "default": "CC BY 4.0"
+        },
+        "rate_limit": {
+          "type": "string",
+          "default": "60 req/min anon"
+        },
+        "dump_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        }
+      }
+    },
+    "community": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "members_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "entities_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "events_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sources_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "compliance_level": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "description": "0=Seed, 1=Registered, 2=Verified, 3=Validated. See §8."
+    },
+    "compliance_levels": {
+      "type": "object",
+      "description": "Reference table — only meaningful on registry-type ceibas."
+    },
+    "_koa_gen": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "KOA-internal scaffolding hint. Not part of protocol; safe to ignore for non-KOA tooling.",
+      "properties": {
+        "koa_base_version": {
+          "type": "string"
+        },
+        "patterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "runtime": {
+          "type": "string"
+        },
+        "source_ceiba": {
+          "type": "string"
+        },
+        "migration_date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "alpha": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "public",
+            "private",
+            "closed"
+          ]
+        },
+        "since": {
+          "type": "string",
+          "format": "date"
+        },
+        "history_cutoff_days": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "country_restriction_default": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 4
+        },
+        "paid_tier_enabled": {
+          "type": "boolean"
+        },
+        "search_always_free": {
+          "type": "boolean"
+        }
+      }
+    },
+    "deploy": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "MUST be stripped from public /.well-known/ceiba.json responses (§10).",
+      "properties": {
+        "host": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "service": {
+          "type": "string"
+        }
+      }
+    },
+    "seed_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "registry": {
+      "type": "object",
+      "description": "Only on registry-type ceibas."
+    },
+    "meta": {
+      "type": "object",
+      "description": "Free-form publisher metadata."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "registry"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "registry"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "karma": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            },
+            "required": [
+              "enabled"
+            ]
+          }
+        },
+        "required": [
+          "karma"
+        ]
+      },
+      "then": {
+        "properties": {
+          "karma": {
+            "required": [
+              "redemption_rate",
+              "redemption_currency",
+              "transferable",
+              "escrow_proof_url"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
