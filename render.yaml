@@ -18,6 +18,8 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.7
+      - key: CEIBA_OPERATOR_TOKEN     # enables the write API; remove to keep the ceiba read-only
+        generateValue: true
     disk:
       name: ceiba-data
       mountPath: /opt/render/project/src/data

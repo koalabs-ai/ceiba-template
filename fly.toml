@@ -19,7 +19,8 @@ primary_region = "scl"      # ← pick a region (scl, gru, mia, dfw, ord, ams, .
 
 [env]
   PORT = "8080"
-  # Set additional env vars with: flyctl secrets set KEY=value
+  # Enable the write API: flyctl secrets set CEIBA_OPERATOR_TOKEN=$(openssl rand -urlsafe-b64 2>/dev/null || python3 -c "import secrets;print(secrets.token_urlsafe(32))")
+  # Without it, POST/PATCH/DELETE return 403 "writes disabled".
 
 [http_service]
   internal_port = 8080
