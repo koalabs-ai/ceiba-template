@@ -292,8 +292,21 @@ def stats() -> dict[str, Any]:
 # ────────────────────────────────────────────────────────────
 
 
+def _entity_type_or_404(type: str) -> str:
+    """Allowlist the URL entity type BEFORE it reaches SQL (table name)."""
+    allowed = {ENTITY_TYPE}
+    try:
+        allowed |= {t for t in load_manifest()["identity"]["entity_types"] if re.fullmatch(r"[a-z][a-z0-9_]*", t)}
+    except Exception:
+        pass
+    if type not in allowed:
+        raise HTTPException(404, "Unknown entity type")
+    return type
+
+
 @app.get("/v1/{type}s")
 def list_entities(type: str, limit: int = 50, offset: int = 0, search: str | None = None):
+    type = _entity_type_or_404(type)
     db = get_db()
     try:
         if search:
@@ -307,17 +320,18 @@ def list_entities(type: str, limit: int = 50, offset: int = 0, search: str | Non
                 (limit, offset),
             ).fetchall()
     except sqlite3.OperationalError as e:
-        raise HTTPException(404, f"Unknown entity type: {type} ({e})")
+        raise HTTPException(404, "Unknown entity type")
     return [parse_data(dict(r)) for r in rows]
 
 
 @app.get("/v1/{type}s/{entity_id}")
 def get_entity(type: str, entity_id: str):
+    type = _entity_type_or_404(type)
     db = get_db()
     try:
         row = db.execute(f"SELECT * FROM {type}s WHERE id = ?", (entity_id,)).fetchone()
     except sqlite3.OperationalError as e:
-        raise HTTPException(404, f"Unknown entity type: {type} ({e})")
+        raise HTTPException(404, "Unknown entity type")
     if not row:
         raise HTTPException(404, "not found")
     history = db.execute(
