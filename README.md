@@ -82,4 +82,4 @@ See the [technical whitepaper](https://ceiba.to/whitepaper-tecnico.html) for the
 
 ## License
 
-The scaffold is MIT-licensed. The data your ceiba publishes is **CC BY 4.0 by default** (you can override per-ceiba in `ceiba.json`).
+The scaffold is licensed under the Apache License 2.0 (see `LICENSE`). The data your ceiba publishes is **CC BY 4.0 by default** (you can override per-ceiba in `ceiba.json`).
